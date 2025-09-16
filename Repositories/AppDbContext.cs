@@ -1,6 +1,14 @@
-﻿namespace Repositories
+﻿using Microsoft.EntityFrameworkCore;
+using System.Reflection;
+
+namespace Repositories;
+public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
-    public class AppDbContext
+    public DbSet<Product> Products { get; set; } = default!;
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+        base.OnModelCreating(modelBuilder);
     }
 }
