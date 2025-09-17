@@ -1,2 +1,2 @@
 ﻿namespace Services.Products;
-public record UpdateProductRequest(int id, string Name, decimal price, int stock);
+public record UpdateProductRequest(string Name, decimal price, int stock);

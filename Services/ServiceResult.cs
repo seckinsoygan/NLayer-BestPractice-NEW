@@ -1,13 +1,14 @@
 ﻿using System.Net;
+using System.Text.Json.Serialization;
 
 namespace Services;
 public class ServiceResult<T>
 {
     public T? Data { get; init; }
     public List<string>? ErrorMessage { get; set; }
-    public bool isSuccess => ErrorMessage == null || ErrorMessage.Count == 0;
-    public bool isFail => !isSuccess;
-    public HttpStatusCode Status { get; set; }
+    [JsonIgnore] public bool isSuccess => ErrorMessage == null || ErrorMessage.Count == 0;
+    [JsonIgnore] public bool isFail => !isSuccess;
+    [JsonIgnore] public HttpStatusCode Status { get; set; }
 
     //static factory methods
     public static ServiceResult<T> Success(T data, HttpStatusCode status = HttpStatusCode.OK)
@@ -28,9 +29,9 @@ public class ServiceResult<T>
 public class ServiceResult
 {
     public List<string>? ErrorMessage { get; set; }
-    public bool isSuccess => ErrorMessage == null || ErrorMessage.Count == 0;
-    public bool isFail => !isSuccess;
-    public HttpStatusCode Status { get; set; }
+    [JsonIgnore] public bool isSuccess => ErrorMessage == null || ErrorMessage.Count == 0;
+    [JsonIgnore] public bool isFail => !isSuccess;
+    [JsonIgnore] public HttpStatusCode Status { get; set; }
 
     //static factory methods
     public static ServiceResult Success(HttpStatusCode status = HttpStatusCode.OK)
