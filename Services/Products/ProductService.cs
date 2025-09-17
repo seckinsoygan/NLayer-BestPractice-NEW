@@ -1,22 +1,30 @@
-﻿using Repositories;
+﻿using Microsoft.EntityFrameworkCore;
+using Repositories;
 using Repositories.Products;
 
 namespace Services.Products;
 
 public class ProductService(IProductRepository productRepository, IUnitOfWork unitOfWork) : IProductService
 {
-    public async Task<ServiceResult<CreateProductResponse>> CreateAsync(string name, decimal price, int stock)
+    public async Task<ServiceResult<CreateProductResponse>> CreateAsync(CreateProductRequest request)
     {
         var product = new Product
         {
-            Name = name,
-            Price = price,
-            Stock = stock
+            Name = request.Name,
+            Price = request.price,
+            Stock = request.stock
         };
         await productRepository.AddAsync(product);
         await unitOfWork.SaveChangesAsync();
 
         return ServiceResult<CreateProductResponse>.Success(new CreateProductResponse(product.Id));
+    }
+    public async Task<ServiceResult<List<ProductDto>>> GetAllAsync()
+    {
+        var products = await productRepository.GetAll().ToListAsync();
+        var productsAsDto = products.Select(p => new ProductDto(p.Id, p.Name, p.Price, p.Stock)).ToList();
+        return ServiceResult<List<ProductDto>>.Success(productsAsDto);
+
     }
 
     public async Task<ServiceResult<ProductDto?>> GetByIdAsync(int id)
@@ -49,7 +57,7 @@ public class ProductService(IProductRepository productRepository, IUnitOfWork un
         var product = await productRepository.GetByIdAsync(id);
         if (product is null)
         {
-            ServiceResult<ProductDto?>.Fail("Product not found", System.Net.HttpStatusCode.NotFound);
+            return ServiceResult.Fail("Product not found", System.Net.HttpStatusCode.NotFound);
         }
         product.Name = request.Name;
         product.Price = request.price;
@@ -59,4 +67,18 @@ public class ProductService(IProductRepository productRepository, IUnitOfWork un
         await unitOfWork.SaveChangesAsync();
         return ServiceResult.Success();
     }
+
+    public async Task<ServiceResult> DeleteAsync(int id)
+    {
+        var product = await productRepository.GetByIdAsync(id);
+        if (product is null)
+        {
+            return ServiceResult.Fail("Product not found", System.Net.HttpStatusCode.NotFound);
+        }
+        productRepository.Delete(product);
+        await unitOfWork.SaveChangesAsync();
+        return ServiceResult.Success();
+    }
+
+
 }
