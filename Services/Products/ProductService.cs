@@ -1,12 +1,14 @@
-﻿using FluentValidation;
+﻿using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
 using Repositories;
 using Repositories.Products;
+using Services.Products.Create;
+using Services.Products.Update;
 using System.Net;
 
 namespace Services.Products;
 
-public class ProductService(IProductRepository productRepository, IUnitOfWork unitOfWork, IValidator<CreateProductRequest> validator) : IProductService
+public class ProductService(IProductRepository productRepository, IUnitOfWork unitOfWork, IMapper mapper) : IProductService
 {
     public async Task<ServiceResult<CreateProductResponse>> CreateAsync(CreateProductRequest request)
     {
@@ -24,7 +26,7 @@ public class ProductService(IProductRepository productRepository, IUnitOfWork un
     public async Task<ServiceResult<List<ProductDto>>> GetAllAsync()
     {
         var products = await productRepository.GetAll().ToListAsync();
-        var productsAsDto = products.Select(p => new ProductDto(p.Id, p.Name, p.Price, p.Stock)).ToList();
+        var productsAsDto = mapper.Map<List<ProductDto>>(products);
         return ServiceResult<List<ProductDto>>.Success(productsAsDto);
 
     }

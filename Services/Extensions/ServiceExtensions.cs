@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using FluentValidation.AspNetCore;
+using Mapster;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Services.Products;
@@ -13,7 +14,12 @@ public static class ServiceExtensions
         services.AddScoped<IProductService, ProductService>();
 
         services.AddFluentValidationAutoValidation();
+
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+
+        services.AddMapster();
+        TypeAdapterConfig.GlobalSettings.Scan(AppDomain.CurrentDomain.GetAssemblies());
+
         return services;
     }
 }
