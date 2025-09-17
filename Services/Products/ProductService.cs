@@ -27,7 +27,6 @@ public class ProductService(IProductRepository productRepository, IUnitOfWork un
         return ServiceResult<List<ProductDto>>.Success(productsAsDto);
 
     }
-
     public async Task<ServiceResult<ProductDto?>> GetByIdAsync(int id)
     {
         var product = await productRepository.GetByIdAsync(id);
@@ -41,7 +40,6 @@ public class ProductService(IProductRepository productRepository, IUnitOfWork un
 
         return ServiceResult<ProductDto?>.Success(productAsDto!);
     }
-
     public async Task<ServiceResult<List<ProductDto>>> GetTopPriceProductsAsync(int count)
     {
         var products = await productRepository.GetTopPriceProductsAsync(count);
@@ -52,7 +50,6 @@ public class ProductService(IProductRepository productRepository, IUnitOfWork un
             Data = productsAsDto
         };
     }
-
     public async Task<ServiceResult> UpdateAsync(int id, UpdateProductRequest request)
     {
         var product = await productRepository.GetByIdAsync(id);
@@ -68,7 +65,19 @@ public class ProductService(IProductRepository productRepository, IUnitOfWork un
         await unitOfWork.SaveChangesAsync();
         return ServiceResult.Success(HttpStatusCode.NoContent);
     }
+    public async Task<ServiceResult> UpdateStockAsync(UpdateProductStockRequest request)
+    {
+        var product = await productRepository.GetByIdAsync(request.ProductId);
+        if (product is null)
+        {
+            return ServiceResult.Fail("Product not found", System.Net.HttpStatusCode.NotFound);
+        }
+        product.Stock = request.Quantity;
+        productRepository.Update(product);
+        await unitOfWork.SaveChangesAsync();
 
+        return ServiceResult.Success(HttpStatusCode.NoContent);
+    }
     public async Task<ServiceResult> DeleteAsync(int id)
     {
         var product = await productRepository.GetByIdAsync(id);
@@ -80,7 +89,6 @@ public class ProductService(IProductRepository productRepository, IUnitOfWork un
         await unitOfWork.SaveChangesAsync();
         return ServiceResult.Success(HttpStatusCode.NoContent);
     }
-
     public async Task<ServiceResult<List<ProductDto>>> GetPagedAllListAsync(int pageNumber, int pageSize)
     {
         var products = await productRepository.GetAll()
