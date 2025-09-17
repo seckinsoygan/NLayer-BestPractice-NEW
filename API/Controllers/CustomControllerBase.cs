@@ -13,8 +13,8 @@ namespace API.Controllers
         {
             return result.Status switch
             {
-                HttpStatusCode.NoContent => new ObjectResult(null) { StatusCode = result.Status.GetHashCode() },
-                HttpStatusCode.Created => Created(result.UrlAsCreated, result.Data),
+                HttpStatusCode.NoContent => NoContent(),
+                HttpStatusCode.Created => Created(result.UrlAsCreated, result),
                 _ => new ObjectResult(result) { StatusCode = result.Status.GetHashCode() }
             };
         }
