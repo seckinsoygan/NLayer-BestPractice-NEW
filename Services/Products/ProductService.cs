@@ -18,7 +18,7 @@ public class ProductService(IProductRepository productRepository, IUnitOfWork un
         await productRepository.AddAsync(product);
         await unitOfWork.SaveChangesAsync();
 
-        return ServiceResult<CreateProductResponse>.Success(new CreateProductResponse(product.Id));
+        return ServiceResult<CreateProductResponse>.SuccessAsCreated(new CreateProductResponse(product.Id), $"api/products/{product.Id}");
     }
     public async Task<ServiceResult<List<ProductDto>>> GetAllAsync()
     {
@@ -37,7 +37,7 @@ public class ProductService(IProductRepository productRepository, IUnitOfWork un
             ServiceResult<ProductDto?>.Fail("Product not found", System.Net.HttpStatusCode.NotFound);
         }
 
-        var productAsDto = new ProductDto(product.Id, product.Name, product.Price, product.Stock);
+        var productAsDto = new ProductDto(product!.Id, product.Name, product.Price, product.Stock);
 
         return ServiceResult<ProductDto?>.Success(productAsDto!);
     }
@@ -61,8 +61,8 @@ public class ProductService(IProductRepository productRepository, IUnitOfWork un
             return ServiceResult.Fail("Product not found", System.Net.HttpStatusCode.NotFound);
         }
         product.Name = request.Name;
-        product.Price = request.price;
-        product.Stock = request.stock;
+        product.Price = request.Price;
+        product.Stock = request.Stock;
 
         productRepository.Update(product);
         await unitOfWork.SaveChangesAsync();
@@ -81,5 +81,12 @@ public class ProductService(IProductRepository productRepository, IUnitOfWork un
         return ServiceResult.Success(HttpStatusCode.NoContent);
     }
 
-
+    public async Task<ServiceResult<List<ProductDto>>> GetPagedAllListAsync(int pageNumber, int pageSize)
+    {
+        var products = await productRepository.GetAll()
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize).ToListAsync();
+        var productsAsDto = products.Select(p => new ProductDto(p.Id, p.Name, p.Price, p.Stock)).ToList();
+        return ServiceResult<List<ProductDto>>.Success(productsAsDto);
+    }
 }
