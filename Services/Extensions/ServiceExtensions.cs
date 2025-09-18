@@ -3,6 +3,7 @@ using FluentValidation.AspNetCore;
 using Mapster;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Services.ExceptionHandlers;
 using Services.Products;
 using System.Reflection;
 
@@ -19,6 +20,9 @@ public static class ServiceExtensions
 
         services.AddMapster();
         TypeAdapterConfig.GlobalSettings.Scan(AppDomain.CurrentDomain.GetAssemblies());
+
+        services.AddExceptionHandler<CriticalExceptionHandler>();
+        services.AddExceptionHandler<GlobalExceptionHandler>();
 
         return services;
     }
