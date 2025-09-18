@@ -12,7 +12,7 @@ public class CriticalExceptionHandler(ILogger<CriticalExceptionHandler> logger) 
             logger.LogCritical(exception, "A critical exception occurred: {Message}", exception.Message);
             httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
             httpContext.Response.ContentType = "application/json";
-            var result = System.Text.Json.JsonSerializer.Serialize(new { error = "A critical error occurred. Please contact support." });
+            _ = System.Text.Json.JsonSerializer.Serialize(new { error = "A critical error occurred. Please contact support." });
         }
         return ValueTask.FromResult(false);
     }

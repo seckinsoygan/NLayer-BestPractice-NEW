@@ -4,6 +4,7 @@ using Repositories;
 using Repositories.Products;
 using Services.Products.Create;
 using Services.Products.Update;
+using Services.Products.UpdateStock;
 using System.Net;
 
 namespace Services.Products;
@@ -15,8 +16,8 @@ public class ProductService(IProductRepository productRepository, IUnitOfWork un
         var product = new Product
         {
             Name = request.Name,
-            Price = request.price,
-            Stock = request.stock
+            Price = request.Price,
+            Stock = request.Stock
         };
         await productRepository.AddAsync(product);
         await unitOfWork.SaveChangesAsync();
@@ -46,7 +47,7 @@ public class ProductService(IProductRepository productRepository, IUnitOfWork un
     public async Task<ServiceResult<List<ProductDto>>> GetTopPriceProductsAsync(int count)
     {
         var products = await productRepository.GetTopPriceProductsAsync(count);
-        var productsAsDto = products.Select(p => new ProductDto(p.Id, p.Name, p.Price, p.Stock)).ToList();
+        var productsAsDto = mapper.Map<List<ProductDto>>(products);
 
         return new ServiceResult<List<ProductDto>>
         {

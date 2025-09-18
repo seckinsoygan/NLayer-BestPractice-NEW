@@ -8,8 +8,8 @@ public class CreateProductRequestValidator : AbstractValidator<CreateProductRequ
     public CreateProductRequestValidator()
     {
         RuleFor(x => x.Name).NotNull().WithMessage("Ürün ismi gereklidir.").Must(MustUniqueProductName).WithMessage("Ürün ismi veritabanında bulunmaktadır.");
-        RuleFor(x => x.price).GreaterThan(0).WithMessage("Ürün fiyatı 0'dan büyük olmalıdır.");
-        RuleFor(x => x.stock).GreaterThanOrEqualTo(0).WithMessage("Ürün stoğu 0'dan küçük olamaz.");
+        RuleFor(x => x.Price).GreaterThan(0).WithMessage("Ürün fiyatı 0'dan büyük olmalıdır.");
+        RuleFor(x => x.Stock).GreaterThanOrEqualTo(0).WithMessage("Ürün stoğu 0'dan küçük olamaz.");
     }
     private bool MustUniqueProductName(string name)
     {
