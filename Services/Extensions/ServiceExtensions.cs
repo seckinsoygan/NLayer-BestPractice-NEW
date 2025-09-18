@@ -3,6 +3,7 @@ using FluentValidation.AspNetCore;
 using Mapster;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Services.Categories;
 using Services.ExceptionHandlers;
 using Services.Products;
 using System.Reflection;
@@ -13,6 +14,7 @@ public static class ServiceExtensions
     public static IServiceCollection AddServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<IProductService, ProductService>();
+        services.AddScoped<ICategoryService, CategoryService>();
 
         services.AddFluentValidationAutoValidation();
 
