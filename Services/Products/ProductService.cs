@@ -17,7 +17,8 @@ public class ProductService(IProductRepository productRepository, IUnitOfWork un
         {
             Name = request.Name,
             Price = request.Price,
-            Stock = request.Stock
+            Stock = request.Stock,
+            CategoryId = request.CategoryId
         };
         await productRepository.AddAsync(product);
         await unitOfWork.SaveChangesAsync();
@@ -40,7 +41,7 @@ public class ProductService(IProductRepository productRepository, IUnitOfWork un
             ServiceResult<ProductDto?>.Fail("Product not found", System.Net.HttpStatusCode.NotFound);
         }
 
-        var productAsDto = new ProductDto(product!.Id, product.Name, product.Price, product.Stock);
+        var productAsDto = new ProductDto(product!.Id, product.Name, product.Price, product.Stock, product.CategoryId);
 
         return ServiceResult<ProductDto?>.Success(productAsDto!);
     }
@@ -98,7 +99,7 @@ public class ProductService(IProductRepository productRepository, IUnitOfWork un
         var products = await productRepository.GetAll()
             .Skip((pageNumber - 1) * pageSize)
             .Take(pageSize).ToListAsync();
-        var productsAsDto = products.Select(p => new ProductDto(p.Id, p.Name, p.Price, p.Stock)).ToList();
+        var productsAsDto = products.Select(p => new ProductDto(p.Id, p.Name, p.Price, p.Stock, p.CategoryId)).ToList();
         return ServiceResult<List<ProductDto>>.Success(productsAsDto);
     }
 }

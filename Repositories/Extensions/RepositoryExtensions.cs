@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Repositories.Categories;
+using Repositories.Interceptors;
 using Repositories.Interfaces;
 using Repositories.Products;
 
@@ -18,6 +19,7 @@ namespace Repositories.Extensions
                 {
                     sqlServerOptionsAction.MigrationsAssembly(typeof(RepositoryAssembly).Assembly.FullName);
                 });
+                options.AddInterceptors(new AuditDbContextInterceptor());
             });
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
